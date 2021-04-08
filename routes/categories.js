@@ -1,4 +1,5 @@
 const express = require('express')
+const { get } = require('mongoose')
 const router = express.Router()
 const Category = require('../models/category')
 
@@ -13,7 +14,7 @@ router.get('/', async (req,res) => {
 })
 
 //get category id
-router.get('/:id', async (req, res) => {
+router.get('/:id',getCategory, async (req, res) => {
    res.send(res.category)
 })
 
@@ -26,6 +27,7 @@ router.post('/', async (req, res) =>{
 
    try{
       const newCategory = await category.save()
+      
       res.status(201).json(newCategory)
    }catch(e){
       res.status(400).json({message: e.message})
@@ -40,17 +42,20 @@ router.patch('/:id', getCategory, async (req, res) =>{
 
    try{
       const updatedCategory = await res.category.save()
-      res.json(updatedCategory)
+      const categories = await Category.find()
+      res.json(categories)
+      
    }catch(e){
       res.status(400).json({message: e.message})
    }
 })
 
 //delete
-router.delete('/:id', getCategory, async (req, res) =>{
+router.get('/delete/:id', getCategory, async (req, res) =>{
    try{
       await res.category.remove()
-      res.json({message: "Deleted category"})
+      const categories = await Category.find()
+      res.json(categories)
    }catch(e){
       res.status(500).json({message: e.message})
    }
